@@ -2,7 +2,7 @@ import { OPENAI_CONFIG } from "./config";
 import type { PalmAnalysisResult } from "./apiService";
 
 export function isOpenAIConfigured(): boolean {
-  return Boolean(OPENAI_CONFIG.API_KEY?.trim());
+  return true; // key lives server-side
 }
 
 async function fileToDataUrl(file: File): Promise<string> {
@@ -34,17 +34,11 @@ async function chatCompletion(
   messages: Array<{ role: string; content: string | Array<Record<string, unknown>> }>,
   maxTokens = 4000,
 ): Promise<string> {
-  if (!isOpenAIConfigured()) {
-    throw new Error("OpenAI API key is not configured. Add VITE_OPENAI_API_KEY to .env");
-  }
-
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const response = await fetch("/api/openai", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${OPENAI_CONFIG.API_KEY}`,
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      endpoint: "/chat/completions",
       model: OPENAI_CONFIG.MODEL,
       max_tokens: maxTokens,
       messages,
@@ -63,9 +57,7 @@ async function chatCompletion(
   const content = (data as { choices?: Array<{ message?: { content?: string } }> })
     ?.choices?.[0]?.message?.content;
 
-  if (!content) {
-    throw new Error("Empty response from OpenAI");
-  }
+  if (!content) throw new Error("Empty response from OpenAI");
 
   return content;
 }
@@ -353,20 +345,14 @@ export async function speakWithOpenAI(
   text: string,
   options?: { voice?: string },
 ): Promise<string> {
-  if (!isOpenAIConfigured()) {
-    throw new Error("OpenAI API key is not configured. Add VITE_OPENAI_API_KEY to .env");
-  }
-
   const cleaned = text.replace(/\s+/g, " ").trim().slice(0, 4000);
   if (!cleaned) throw new Error("Nothing to speak");
 
-  const response = await fetch("https://api.openai.com/v1/audio/speech", {
+  const response = await fetch("/api/openai", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${OPENAI_CONFIG.API_KEY}`,
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      endpoint: "/audio/speech",
       model: OPENAI_CONFIG.TTS_MODEL,
       voice: options?.voice || OPENAI_CONFIG.TTS_VOICE,
       input: cleaned,
@@ -374,37 +360,22 @@ export async function speakWithOpenAI(
     }),
   });
 
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    const errMsg =
-      (data as { error?: { message?: string } })?.error?.message ||
-      `OpenAI TTS error ${response.status}`;
-    throw new Error(errMsg);
-  }
+  if (!response.ok) throw new Error(`OpenAI TTS error ${response.status}`);
 
   const blob = await response.blob();
   return URL.createObjectURL(blob);
 }
 
-/** Transcribe microphone audio with OpenAI Whisper / gpt-4o-transcribe. */
+/** Transcribe microphone audio with OpenAI Whisper. */
 export async function transcribeWithOpenAI(audioBlob: Blob): Promise<string> {
-  if (!isOpenAIConfigured()) {
-    throw new Error("OpenAI API key is not configured. Add VITE_OPENAI_API_KEY to .env");
-  }
-
   const form = new FormData();
   const ext = audioBlob.type.includes("mp4") ? "mp4" : "webm";
   form.append("file", audioBlob, `astra-voice.${ext}`);
   form.append("model", OPENAI_CONFIG.STT_MODEL);
   form.append("language", "en");
+  form.append("endpoint", "/audio/transcriptions");
 
-  const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${OPENAI_CONFIG.API_KEY}`,
-    },
-    body: form,
-  });
+  const response = await fetch("/api/openai", { method: "POST", body: form });
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
