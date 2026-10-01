@@ -10,10 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BRAND } from "@/lib/brand";
-import { HUTCH_CONFIG } from "@/lib/config";
 import { useAuth } from "@/contexts/AuthContext";
-import { HUTCH_COUNTRY_CODE } from "@/lib/hutchApi";
-import { Loader2, Phone, Sparkles, Star } from "lucide-react";
+import { Phone, Sparkles, Star } from "lucide-react";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -22,7 +20,7 @@ interface AuthModalProps {
 }
 
 const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
-  const { login, savePendingMsisdn, isLoading } = useAuth();
+  const { login } = useAuth();
   const [mobile, setMobile] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -34,16 +32,9 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     if (result.success) {
       setMobile("");
       onClose();
-      return;
+    } else {
+      setErrorMessage(result.error || "Login failed. Please try again.");
     }
-
-    if (result.redirectURL) {
-      savePendingMsisdn(mobile);
-      window.location.href = result.redirectURL;
-      return;
-    }
-
-    setErrorMessage(result.error || "Login failed. Please try again.");
   };
 
   return (
@@ -57,7 +48,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             </DialogTitle>
           </div>
           <DialogDescription className="text-xs sm:text-sm text-muted-foreground">
-            Enter your Hutch mobile number to access {HUTCH_CONFIG.PRODUCT_NAME}
+            Enter your mobile number to continue
           </DialogDescription>
         </DialogHeader>
 
@@ -66,51 +57,31 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             <Label htmlFor="login-msisdn" className="text-sm font-medium">
               Mobile Number
             </Label>
-            <div className="flex overflow-hidden rounded-lg border border-border/50 focus-within:border-cosmic/50">
-              <span className="flex items-center bg-background/80 px-3 text-sm font-semibold text-muted-foreground select-none">
-                +{HUTCH_COUNTRY_CODE}
-              </span>
-              <div className="relative flex-1">
-                <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground z-10" />
-                <Input
-                  id="login-msisdn"
-                  type="tel"
-                  inputMode="numeric"
-                  placeholder="7XXXXXXXX"
-                  value={mobile}
-                  onChange={(e) =>
-                    setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))
-                  }
-                  className="border-0 rounded-none pl-10 h-11 sm:h-12 text-sm sm:text-base bg-background/50 focus-visible:ring-0 focus-visible:ring-offset-0"
-                  required
-                  autoComplete="tel"
-                  autoFocus
-                  disabled={isLoading}
-                  maxLength={10}
-                />
-              </div>
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground z-10" />
+              <Input
+                id="login-msisdn"
+                type="tel"
+                inputMode="numeric"
+                placeholder="Enter your number"
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 15))}
+                className="pl-10 h-11 sm:h-12 text-sm sm:text-base"
+                required
+                autoComplete="tel"
+                autoFocus
+                maxLength={15}
+              />
             </div>
-            <p className="text-[10px] sm:text-xs text-muted-foreground">
-              Hutch Sri Lanka number without country code
-            </p>
           </div>
 
           <Button
             type="submit"
             className="w-full bg-stellar-gradient hover:opacity-90 grahveda-glow h-11 sm:h-12 text-sm sm:text-base font-medium transition-all touch-manipulation"
-            disabled={isLoading || !mobile.trim()}
+            disabled={!mobile.trim()}
           >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2 animate-spin" />
-                Checking subscription...
-              </>
-            ) : (
-              <>
-                <Star className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                Continue
-              </>
-            )}
+            <Star className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+            Continue
           </Button>
         </form>
 
