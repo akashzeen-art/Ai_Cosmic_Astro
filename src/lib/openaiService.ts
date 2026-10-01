@@ -1,10 +1,6 @@
 import { OPENAI_CONFIG } from "./config";
 import type { PalmAnalysisResult } from "./apiService";
 
-export function isOpenAIConfigured(): boolean {
-  return true; // key lives server-side
-}
-
 async function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

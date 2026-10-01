@@ -38,7 +38,7 @@ import {
 import { Link } from "react-router-dom";
 import { API_CONFIG, API_ENDPOINTS, STORAGE_KEYS, FEATURES } from "@/lib/config";
 import { getMockAstrologyBackendResult } from "@/lib/mockAstrology";
-import { generateAstrologyWithOpenAI, isOpenAIConfigured } from "@/lib/openaiService";
+import { generateAstrologyWithOpenAI } from "@/lib/openaiService";
 const AstrologyReading = () => {
   // Authentication removed
   const { language, tr } = useLanguage();
@@ -287,9 +287,7 @@ const AstrologyReading = () => {
 
       if (FEATURES.MOCK_API) {
         await new Promise((r) => setTimeout(r, 2200));
-        result = isOpenAIConfigured()
-          ? await generateAstrologyWithOpenAI(birthData, language, focusAreas)
-          : getMockAstrologyBackendResult(birthData);
+        result = await generateAstrologyWithOpenAI(birthData, language, focusAreas);
       } else {
       // Save preferences
       const preferencesPayload = {

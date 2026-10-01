@@ -4,7 +4,6 @@ import {
   analyzePalmWithOpenAI,
   generateAstrologyWithOpenAI,
   generateNumerologyWithOpenAI,
-  isOpenAIConfigured,
 } from "./openaiService";
 
 // Types
@@ -1030,7 +1029,7 @@ class PalmAstroAPIService {
    * This is the preferred method matching the specification
    */
   async analyzePalmImage(file: File): Promise<{ success: boolean; reading_id: string; result: PalmAnalysisResult }> {
-    if (isOpenAIConfigured()) {
+    if (true) {
       console.log("🤖 Using OpenAI for palm analysis");
       const result = await analyzePalmWithOpenAI(file);
       return {
@@ -1193,7 +1192,7 @@ class PalmAstroAPIService {
     fullName: string,
     birthDate: string,
   ): Promise<NumerologyApiResult> {
-    if (isOpenAIConfigured()) {
+    if (true) {
       const result = await generateNumerologyWithOpenAI(fullName, birthDate);
       return result as NumerologyApiResult;
     }
@@ -1284,7 +1283,7 @@ class PalmAstroAPIService {
   }
 
   async createAstrologyReading(birthData: any): Promise<AstrologyReading> {
-    if (isOpenAIConfigured()) {
+    if (true) {
       const raw = await generateAstrologyWithOpenAI(birthData);
       return {
         id: `astro_${Date.now()}`,
