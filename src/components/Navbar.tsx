@@ -173,38 +173,45 @@ const Navbar = () => {
               </Link>
             )}
 
-            {/* Language dropdown — visible in header when drawer is closed */}
+            {/* Right side: language dropdown + hamburger */}
             {!drawerOpen && (
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center">
-                <Globe className="pointer-events-none absolute left-2 h-3.5 w-3.5 text-amber-300" />
-                <select
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value as Language)}
-                  className="h-8 appearance-none rounded-lg border border-orange-500/30 bg-orange-500/10 pl-6 pr-2 text-[11px] font-medium text-amber-300 transition-all hover:bg-orange-500/20 focus:outline-none cursor-pointer"
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                <div className="relative flex items-center">
+                  <Globe className="pointer-events-none absolute left-2 h-3.5 w-3.5 text-amber-300" />
+                  <select
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value as Language)}
+                    className="h-8 appearance-none rounded-lg border border-orange-500/30 bg-orange-500/10 pl-6 pr-2 text-[11px] font-medium text-amber-300 transition-all hover:bg-orange-500/20 focus:outline-none cursor-pointer"
+                  >
+                    {LANGUAGES.map((l) => (
+                      <option key={l.code} value={l.code} className="bg-[#1F2628] text-white">
+                        {l.flag} {l.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDrawerOpen((o) => !o)}
+                  className="z-[60] rounded-md p-2 text-white hover:opacity-90"
+                  aria-label="Open menu"
+                  aria-expanded={drawerOpen}
                 >
-                  {LANGUAGES.map((l) => (
-                    <option key={l.code} value={l.code} className="bg-[#1F2628] text-white">
-                      {l.flag} {l.label}
-                    </option>
-                  ))}
-                </select>
+                  <HamburgerIcon open={false} />
+                </button>
               </div>
             )}
 
-            <button
-              type="button"
-              onClick={() => setDrawerOpen((o) => !o)}
-              className={cn(
-                "z-[60] rounded-md p-2 text-white hover:opacity-90",
-                drawerOpen
-                  ? "fixed right-3 top-2"
-                  : "absolute right-0 top-1/2 -translate-y-1/2"
-              )}
-              aria-label={drawerOpen ? "Close menu" : "Open menu"}
-              aria-expanded={drawerOpen}
-            >
-              <HamburgerIcon open={drawerOpen} />
-            </button>
+            {drawerOpen && (
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(false)}
+                className="fixed right-3 top-2 z-[60] rounded-md p-2 text-white hover:opacity-90"
+                aria-label="Close menu"
+              >
+                <HamburgerIcon open={true} />
+              </button>
+            )}
           </div>
         </div>
       </header>
