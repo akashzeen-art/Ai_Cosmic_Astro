@@ -416,5 +416,32 @@ export interface Translations {
     numerologyKeyTraits: string;
     numerologyFocus: string;
     numerologyChooseAnother: string;
+    // TalkToAstra
+    talkTitle: string;
+    talkSubtitle: string;
+    talkVoiceOn: string;
+    talkVoiceOff: string;
+    talkStop: string;
+    talkRecording: string;
+    talkTranscribing: string;
+    talkListening: string;
+    talkPlaceholder: string;
+    talkSend: string;
+    talkPlayVoice: string;
+    talkSpeaking: string;
+    talkGreeting: string;
+    // Dream
+    dreamTitle: string;
+    dreamSubtitle: string;
+    dreamLabel: string;
+    dreamPlaceholder: string;
+    dreamSpeak: string;
+    dreamStop: string;
+    dreamTranscribing: string;
+    dreamInterpret: string;
+    dreamInterpreting: string;
+    dreamPlayVoice: string;
+    // Dashboard extra
+    dashNewReading: string;
   };
 }
