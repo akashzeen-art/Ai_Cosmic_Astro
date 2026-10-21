@@ -18,7 +18,7 @@ export function resolveBrandDomain(hostname?: string): string {
 export const BRAND_CONTACT = {
   PHONE: "9217523567",
   PHONE_DISPLAY: "+91 9217523567",
-  EMAIL: "bd@numeromobile.com",
+  EMAIL: "support@aicosmicastro.com",
   ADDRESS:
     "4th floor, Tower A1, SPAZE ITECH PARK, 417, Sector 49, Gurugram, Haryana 122018",
   ADDRESS_SHORT: "417, Tower A1, Sector-49, Gurgaon, Haryana, 122011",
@@ -32,7 +32,7 @@ export const BRAND = {
   get DOMAIN() {
     return resolveBrandDomain();
   },
-  COMPANY: "NumeroMobile Private Limited",
+  COMPANY: "AI Cosmic Astro",
   LOGO: "/logo.png",
   HEAD: "/head.png",
   VIDEO_PRELOADER: "",

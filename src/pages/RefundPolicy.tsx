@@ -12,7 +12,7 @@ const RefundPolicy = () => (
 
     <LegalSection title="1. Free Trial">
       <p>
-        NumeroMobile may or may not offer a free trial for new users, depending on the service plan or
+        AI Cosmic Astro may or may not offer a free trial for new users, depending on the service plan or
         promotional offer available at the time. If a trial is offered, users may cancel during the
         trial period as per the terms displayed at the time of purchase.
       </p>
