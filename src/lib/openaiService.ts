@@ -58,7 +58,17 @@ async function chatCompletion(
   return content;
 }
 
-const PALM_PROMPT = `Analyze this palm image and provide a detailed palm reading.
+const LANG_INSTRUCTION: Record<string, string> = {
+  es: "Respond entirely in Spanish (Español). All text values in the JSON must be in Spanish.",
+  en: "",
+};
+
+function langNote(language = "en"): string {
+  return LANG_INSTRUCTION[language] || "";
+}
+
+function palmPrompt(language = "en"): string {
+  return `Analyze this palm image and provide a detailed palm reading.${langNote(language) ? "\n" + langNote(language) : ""}
 Return ONLY raw valid JSON — no markdown, no code blocks, no explanation.
 Use EXACTLY this JSON structure with all fields filled with real analysis:
 {
@@ -99,7 +109,8 @@ Use EXACTLY this JSON structure with all fields filled with real analysis:
   ],
   "accuracy": {"lineDetection": 0.95, "patternAnalysis": 0.92, "interpretation": 0.90, "overall": 0.92}
 }
-Replace ALL placeholder values with REAL analysis from the actual palm image.`;
+Replace ALL placeholder values with REAL analysis from the actual palm image.`;}
+
 
 function normalizePalmResult(raw: Record<string, unknown>): PalmAnalysisResult {
   const accuracy = (raw.accuracy as PalmAnalysisResult["accuracy"]) || {
@@ -118,14 +129,14 @@ function normalizePalmResult(raw: Record<string, unknown>): PalmAnalysisResult {
   };
 }
 
-export async function analyzePalmWithOpenAI(file: File): Promise<PalmAnalysisResult> {
+export async function analyzePalmWithOpenAI(file: File, language = "en"): Promise<PalmAnalysisResult> {
   const dataUrl = await fileToDataUrl(file);
   const content = await chatCompletion(
     [
       {
         role: "user",
         content: [
-          { type: "text", text: PALM_PROMPT },
+          { type: "text", text: palmPrompt(language) },
           { type: "image_url", image_url: { url: dataUrl, detail: "high" } },
         ],
       },
@@ -189,11 +200,13 @@ export function computeNumerologyNumbers(fullName: string, birthDate: string) {
 export async function generateNumerologyWithOpenAI(
   fullName: string,
   birthDate: string,
+  language = "en",
 ): Promise<Record<string, unknown>> {
   const computed = computeNumerologyNumbers(fullName, birthDate);
   const prompt = `Provide a detailed numerology reading for:
 Name: ${fullName}, Birth Date: ${birthDate}
 Life Path: ${computed.lifePathNumber}, Destiny: ${computed.destinyNumber}, Soul: ${computed.soulNumber}, Personality: ${computed.personalityNumber}
+${langNote(language)}
 Return ONLY valid JSON with keys:
 title (archetype name e.g. "The Seeker"),
 interpretation (2-3 sentence core reading),
@@ -286,7 +299,7 @@ Replace ALL placeholder values with REAL analysis based on the actual birth data
   return parseJsonFromContent(content);
 }
 
-export async function interpretDreamWithOpenAI(dream: string): Promise<{
+export async function interpretDreamWithOpenAI(dream: string, language = "en"): Promise<{
   title: string;
   summary: string;
   symbols: string[];
@@ -295,6 +308,7 @@ export async function interpretDreamWithOpenAI(dream: string): Promise<{
 }> {
   const prompt = `You are Astra, a warm Cosmic Astro dream guide.
 Interpret this dream in an empowering, mystical but practical tone.
+${langNote(language)}
 Dream: """${dream.trim()}"""
 
 Return ONLY valid JSON with keys:
@@ -318,12 +332,14 @@ emotionalTone (one short phrase).`;
 export async function askAstraWithOpenAI(
   message: string,
   history: Array<{ role: "user" | "assistant"; content: string }> = [],
+  language = "en",
 ): Promise<string> {
+  const langLine = language === "es" ? "\nAlways respond in Spanish (Español)." : "";
   const system = `You are Astra, the guide for AI Cosmic Astro.
 Speak warmly, clearly, and mystically — like a wise friend under the stars.
 Keep answers concise (2-5 short paragraphs). Cover astrology, tarot, numerology,
 dreams, planets, and houses when asked. Never claim medical, legal, or financial certainty.
-If the user asks something unrelated, gently steer back to cosmic guidance.`;
+If the user asks something unrelated, gently steer back to cosmic guidance.${langLine}`;
 
   const content = await chatCompletion(
     [

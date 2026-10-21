@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { whenPreloaderReady } from "@/lib/scrollAnimations";
 import { BRAND } from "@/lib/brand";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-/** Exact Cosmic Astro home category grid (3×3). */
-const CATEGORIES = [
+const CATEGORIES_EN = [
   { label: "Horoscope", path: "/horoscope" },
   { label: "Talk to Astra", path: "/talk-to-astra" },
   { label: "About Astrology", path: "/about" },
@@ -17,9 +17,23 @@ const CATEGORIES = [
   { label: "Planets", path: "/planets" },
 ] as const;
 
+const CATEGORIES_ES = [
+  { label: "Horóscopo", path: "/horoscope" },
+  { label: "Hablar con Astra", path: "/talk-to-astra" },
+  { label: "Sobre Astrología", path: "/about" },
+  { label: "Tarot", path: "/tarot" },
+  { label: "Numerología", path: "/numerology" },
+  { label: "Interpretación de Sueños", path: "/dreams" },
+  { label: "Horóscopo Chino", path: "/chinese-horoscope" },
+  { label: "Casas Astrológicas", path: "/astrology-houses" },
+  { label: "Planetas", path: "/planets" },
+];
+
 const Hero = () => {
   const heroRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const { language } = useLanguage();
+  const CATEGORIES = language === "es" ? CATEGORIES_ES : CATEGORIES_EN;
 
   useEffect(() => {
     let ctx: gsap.Context | undefined;
@@ -58,7 +72,9 @@ const Hero = () => {
         </div>
 
         <div className="cosmic-intro mx-auto mb-5 max-w-3xl sm:mb-7">
-          Hello Wanderer, I&apos;m Astra, how can I enlighten you today?
+          {language === "es"
+            ? "Hola Viajero, soy Astra, ¿cómo puedo iluminarte hoy?"
+            : "Hello Wanderer, I\u2019m Astra, how can I enlighten you today?"}
         </div>
 
         <div className="mx-auto grid max-w-4xl grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5 md:gap-3">

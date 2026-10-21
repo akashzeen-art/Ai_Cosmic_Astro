@@ -1,12 +1,19 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import AuthModal from "./AuthModal";
 import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/utils";
+import { Globe } from "lucide-react";
+import type { Language } from "@/i18n";
 
-/** Cosmic Astro drawer links — order matches reference menu. */
-const MENU_LINKS = [
+const LANGUAGES: { code: Language; label: string; flag: string }[] = [
+  { code: "en", label: "English", flag: "🇬🇧" },
+  { code: "es", label: "Español", flag: "🇪🇸" },
+];
+
+const MENU_LINKS_EN = [
   { path: "/horoscope", label: "Horoscope" },
   { path: "/talk-to-astra", label: "Talk to Astra" },
   { path: "/about", label: "About Astrology" },
@@ -20,7 +27,23 @@ const MENU_LINKS = [
   { path: "/astrology", label: "Birth chart reading" },
   { path: "/downloads", label: "Downloads" },
   { path: "/about-us", label: "About Us" },
-] as const;
+];
+
+const MENU_LINKS_ES = [
+  { path: "/horoscope", label: "Horóscopo" },
+  { path: "/talk-to-astra", label: "Hablar con Astra" },
+  { path: "/about", label: "Sobre Astrología" },
+  { path: "/tarot", label: "Tarot" },
+  { path: "/numerology", label: "Numerología" },
+  { path: "/dreams", label: "Interpretación de Sueños" },
+  { path: "/chinese-horoscope", label: "Horóscopo Chino" },
+  { path: "/astrology-houses", label: "Casas Astrológicas" },
+  { path: "/planets", label: "Planetas" },
+  { path: "/palm-analysis", label: "Análisis de Palma" },
+  { path: "/astrology", label: "Lectura de Carta Natal" },
+  { path: "/downloads", label: "Descargas" },
+  { path: "/about-us", label: "Sobre Nosotros" },
+];
 
 const BackArrowIcon = () => (
   <svg
@@ -66,6 +89,8 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { language, setLanguage } = useLanguage();
+  const MENU_LINKS = language === "es" ? MENU_LINKS_ES : MENU_LINKS_EN;
   const showBack = location.pathname !== "/" && !drawerOpen;
 
   /** Cosmic Astro: nested → parent section; section pages → home. */
@@ -148,6 +173,24 @@ const Navbar = () => {
               </Link>
             )}
 
+            {/* Language dropdown — visible in header when drawer is closed */}
+            {!drawerOpen && (
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center">
+                <Globe className="pointer-events-none absolute left-2 h-3.5 w-3.5 text-amber-300" />
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value as Language)}
+                  className="h-8 appearance-none rounded-lg border border-orange-500/30 bg-orange-500/10 pl-6 pr-2 text-[11px] font-medium text-amber-300 transition-all hover:bg-orange-500/20 focus:outline-none cursor-pointer"
+                >
+                  {LANGUAGES.map((l) => (
+                    <option key={l.code} value={l.code} className="bg-[#1F2628] text-white">
+                      {l.flag} {l.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             <button
               type="button"
               onClick={() => setDrawerOpen((o) => !o)}
@@ -188,6 +231,26 @@ const Navbar = () => {
               </Link>
             </div>
 
+            {/* Language switcher inside drawer */}
+            <div className="flex items-center justify-center gap-2 mb-4">
+              {LANGUAGES.map((l) => (
+                <button
+                  key={l.code}
+                  type="button"
+                  onClick={() => setLanguage(l.code)}
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium transition-all",
+                    language === l.code
+                      ? "border-amber-400/70 bg-amber-400/20 text-amber-300"
+                      : "border-white/20 bg-white/5 text-white/60 hover:border-amber-400/40 hover:text-white/90"
+                  )}
+                >
+                  <span>{l.flag}</span>
+                  <span>{l.label}</span>
+                </button>
+              ))}
+            </div>
+
             <nav className="relative z-10 flex flex-1 flex-col items-center px-4 text-center">
               {MENU_LINKS.map((item) => (
                 <Link
@@ -213,7 +276,7 @@ const Navbar = () => {
                       location.pathname === "/my-account" && "is-active"
                     )}
                   >
-                    My Account
+                    {language === "es" ? "Mi Cuenta" : "My Account"}
                   </Link>
                   <button
                     type="button"
@@ -223,7 +286,7 @@ const Navbar = () => {
                     }}
                     className="cosmic-menu-btn"
                   >
-                    Logout
+                    {language === "es" ? "Cerrar Sesión" : "Logout"}
                   </button>
                 </>
               ) : (
@@ -235,7 +298,7 @@ const Navbar = () => {
                   }}
                   className="cosmic-menu-btn"
                 >
-                  Login
+                  {language === "es" ? "Iniciar Sesión" : "Login"}
                 </button>
               )}
             </nav>

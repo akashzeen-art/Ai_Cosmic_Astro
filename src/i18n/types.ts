@@ -1,4 +1,4 @@
-export type Language = "en" | "my";
+export type Language = "en" | "my" | "es";
 
 export interface Translations {
   // Navbar
@@ -358,5 +358,63 @@ export interface Translations {
     download: string;
     share: string;
     copy: string;
+  };
+
+  // Page UI strings
+  ui: {
+    // Horoscope
+    chooseZodiac: string;
+    daily: string;
+    weekly: string;
+    monthly: string;
+    mood: string;
+    luck: string;
+    chooseAnotherSign: string;
+    ruledBy: string;
+    // Tarot
+    tarotTitle: string;
+    tarotOpen: string;
+    tarotDrawAgain: string;
+    tarotAskAstra: string;
+    // Chinese Horoscope
+    chineseTitle: string;
+    chineseSelectYear: string;
+    chineseYearPlaceholder: string;
+    chineseOrChoose: string;
+    chineseZodiac: string;
+    birthYear: string;
+    element: string;
+    keyTraits: string;
+    chooseAnotherSign2: string;
+    askAstraExplain: string;
+    // Planets
+    planetsTitle: string;
+    planetMeaning: string;
+    keywords: string;
+    chooseAnotherPlanet: string;
+    // Astrology Houses
+    housesTitle: string;
+    housesAboutTitle: string;
+    housesAboutP1: string;
+    housesAboutP2: string;
+    housesRoadmapTitle: string;
+    housesRoadmapP1: string;
+    housesRoadmapP2: string;
+    housesOverview: string;
+    // Numerology
+    numerologyTitle: string;
+    numerologySelectBirthday: string;
+    numerologyDay: string;
+    numerologyMonth: string;
+    numerologyYear: string;
+    numerologySubmit: string;
+    numerologyOrChoose: string;
+    numerologyErrorBirthday: string;
+    numerologyNumber: string;
+    numerologyBirthday: string;
+    numerologyLifePath: string;
+    numerologyKeyTraits: string;
+    numerologyFocus: string;
+    numerologyChooseAnother: string;
   };
 }

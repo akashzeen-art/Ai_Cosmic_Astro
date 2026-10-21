@@ -7,10 +7,12 @@ import {
   speakWithOpenAI,
   transcribeWithOpenAI,
 } from "@/lib/openaiService";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
 /** Cosmic Astro — Dream interpretation via OpenAI (+ voice in / out). */
 const DreamInterpretation = () => {
+  const { language } = useLanguage();
   const [dream, setDream] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,7 +78,7 @@ const DreamInterpretation = () => {
 
     setLoading(true);
     try {
-      const reading = await interpretDreamWithOpenAI(text);
+      const reading = await interpretDreamWithOpenAI(text, language);
       setResult(reading);
       void playReading(reading);
     } catch (err) {

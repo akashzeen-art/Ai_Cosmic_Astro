@@ -7,12 +7,14 @@ import {
   speakWithOpenAI,
   transcribeWithOpenAI,
 } from "@/lib/openaiService";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
 /** Cosmic Astro — Talk to Astra with text + AI audio (TTS / Whisper). */
 const TalkToAstra = () => {
+  const { language } = useLanguage();
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -90,7 +92,7 @@ const TalkToAstra = () => {
     setLoading(true);
 
     try {
-      const reply = await askAstraWithOpenAI(trimmed, nextHistory);
+      const reply = await askAstraWithOpenAI(trimmed, nextHistory, language);
       setMessages((prev) => {
         const next = [...prev, { role: "assistant" as const, content: reply }];
         if (autoSpeak) {

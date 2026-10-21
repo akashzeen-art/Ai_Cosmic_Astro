@@ -6,6 +6,7 @@ import type {
   Reading as BaseReading,
 } from "@/lib/apiService";
 import { STORAGE_KEYS } from "@/lib/config";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Support all reading types including numerology
 type Reading = PalmReading | AstrologyReading | BaseReading;
@@ -47,6 +48,7 @@ export const ReadingsProvider: React.FC<ReadingsProviderProps> = ({
   const [currentReading, setCurrentReading] = useState<Reading | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
+  const { language } = useLanguage();
 
   const addReading = useCallback((reading: Reading) => {
     setReadings((prev) => [reading, ...prev]);
@@ -106,7 +108,7 @@ export const ReadingsProvider: React.FC<ReadingsProviderProps> = ({
           });
         }, 300);
 
-        const analysisResult = await apiService.analyzePalmImage(file);
+        const analysisResult = await apiService.analyzePalmImage(file, language);
         clearInterval(progressInterval);
 
         setProgress(100);

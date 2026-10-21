@@ -1028,10 +1028,10 @@ class PalmAstroAPIService {
    * Analyze palm image using the new /api/palm-reading/analyze endpoint
    * This is the preferred method matching the specification
    */
-  async analyzePalmImage(file: File): Promise<{ success: boolean; reading_id: string; result: PalmAnalysisResult }> {
+  async analyzePalmImage(file: File, language = "en"): Promise<{ success: boolean; reading_id: string; result: PalmAnalysisResult }> {
     if (true) {
       console.log("🤖 Using OpenAI for palm analysis");
-      const result = await analyzePalmWithOpenAI(file);
+      const result = await analyzePalmWithOpenAI(file, language);
       return {
         success: true,
         reading_id: `reading_${Date.now()}`,
@@ -1191,9 +1191,10 @@ class PalmAstroAPIService {
   async createNumerologyReading(
     fullName: string,
     birthDate: string,
+    language = "en",
   ): Promise<NumerologyApiResult> {
     if (true) {
-      const result = await generateNumerologyWithOpenAI(fullName, birthDate);
+      const result = await generateNumerologyWithOpenAI(fullName, birthDate, language);
       return result as NumerologyApiResult;
     }
 
